@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from . import models, schemas, services, database, auth
-
+from fastapi.security import OAuth2PasswordRequestForm
 
 app = FastAPI()
 
@@ -25,9 +25,9 @@ def create_transaction(transaction: schemas.TransactionCreate, db: Session = Dep
 def list_transactions(db: Session = Depends(get_db),current_user: models.User = Depends(auth.get_current_user)):
     return services.get_transactions_by_user(db, current_user.id)
 @app.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    user = services.get_user_by_username(db, username=username)
-    if not user or not auth.verify_password(password, user.hashed_password):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = services.get_user_by_username(db, username=form_data.username)
+    if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
