@@ -18,12 +18,15 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     return services.create_user(db, user)
+
 @app.post("/transactions/", response_model=schemas.TransactionOut)
 def create_transaction(transaction: schemas.TransactionCreate, db: Session = Depends(get_db),current_user: models.User = Depends(auth.get_current_user)):
     return services.create_transaction(db, transaction, current_user.id)
+
 @app.get("/transactions/", response_model=list[schemas.TransactionOut])
 def list_transactions(db: Session = Depends(get_db),current_user: models.User = Depends(auth.get_current_user)):
     return services.get_transactions_by_user(db, current_user.id)
+
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = services.get_user_by_username(db, username=form_data.username)
@@ -35,3 +38,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         )
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+@app.get("/me", response_model=schemas.UserOut)
+def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return current_user

@@ -11,10 +11,11 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     transactions = relationship("Transaction", back_populates="owner")
+    total_money = Column(Float, default=0.0)
 class Transaction(Base):
     __tablename__ = "transactions"
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String, nullable=False)  # 'income' or 'expense'
+    type = Column(String, nullable=False)  
     category = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     date = Column(DateTime, default=datetime.utcnow)
