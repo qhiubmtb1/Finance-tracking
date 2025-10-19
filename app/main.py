@@ -28,7 +28,7 @@ def list_transactions(db: Session = Depends(get_db),current_user: models.User = 
     return services.get_transactions_by_user(db, current_user.id)
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)): 
     user = services.get_user_by_username(db, username=form_data.username)
     if not user or not auth.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
