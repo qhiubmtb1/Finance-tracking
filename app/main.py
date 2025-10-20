@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from . import models, schemas, services, database, auth
 from fastapi.security import OAuth2PasswordRequestForm
-
+from app.database import init_db
 app = FastAPI()
-
+init_db()
 def get_db():
     db = database.SessionLocal()
     try:

@@ -14,7 +14,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use a pure-Python scheme (pbkdf2_sha256) to avoid native bcrypt dependency issues inside containers
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 def hash_password(password: str) -> str:
     truncated_pw = password[:72]  
     return pwd_context.hash(truncated_pw)
@@ -27,7 +28,7 @@ def create_access_token(data : dict) :
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 def get_current_user(token: str = Depends(OAUTH2_SCHEME), db: Session = Depends(database.get_db)):
-    print("Received token:", token)
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
