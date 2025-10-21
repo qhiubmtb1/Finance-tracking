@@ -25,3 +25,5 @@ class TransactionOut(TransactionCreate):
 
     class Config:
         orm_mode = True
+class AIinput(BaseModel):
+    input_text: str
